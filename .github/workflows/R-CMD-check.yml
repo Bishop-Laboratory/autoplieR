@@ -31,7 +31,7 @@ jobs:
           GHKEY: ${{ secrets.GHKEY }}
       - name: Set up env
         run: |
-          mamba activate test-autoplier
+          conda activate test-autoplier
           export RETICULATE_PYTHON=$(which python)
           echo $RETICULATE_PYTHON
       - uses: r-lib/actions/setup-r-dependencies@v1
