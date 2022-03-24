@@ -20,9 +20,6 @@ jobs:
       - uses: r-lib/actions/setup-r@v1
         with:
           use-public-rspm: true
-      - uses: r-lib/actions/setup-r-dependencies@v1
-        with:
-          extra-packages: rcmdcheck
       - uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: 3.9
@@ -34,5 +31,13 @@ jobs:
           GHKEY: ${{ secrets.GHKEY }}
       - name: Set up env
         run: |
-          which mamba
+          mamba activate test-autoplier
+          export RETICULATE_PYTHON=$(which python)
+          echo $RETICULATE_PYTHON
+      - uses: r-lib/actions/setup-r-dependencies@v1
+        with:
+          extra-packages: rcmdcheck
+      - name: Set up env
+        run: |
+          echo $RETICULATE_PYTHON
       - uses: r-lib/actions/check-r-package@v1
