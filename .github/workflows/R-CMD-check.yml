@@ -33,6 +33,7 @@ jobs:
           conda activate test-autoplier
           export RETICULATE_PYTHON=$(which python)
           echo $RETICULATE_PYTHON
+          echo "RETICULATE_PYTHON=$(which python)" >> $GITHUB_ENV
       - uses: r-lib/actions/setup-r@v1
         with:
           use-public-rspm: true
