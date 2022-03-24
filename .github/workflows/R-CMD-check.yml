@@ -45,3 +45,5 @@ jobs:
         run: |
           echo $RETICULATE_PYTHON
       - uses: r-lib/actions/check-r-package@v1
+        with:
+          error-on: '"error"'
