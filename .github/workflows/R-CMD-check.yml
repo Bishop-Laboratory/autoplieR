@@ -24,6 +24,7 @@ jobs:
           python-version: 3.9
           mamba-version: "*"
           channels: conda-forge, bioconda, r
+          environment-file: tests/env.yml
           channel-priority: true
           activate-environment: test-autoplier
         env:
