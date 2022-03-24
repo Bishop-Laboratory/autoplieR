@@ -47,3 +47,12 @@ jobs:
       - uses: r-lib/actions/check-r-package@v1
         with:
           error-on: '"error"'
+      - name: Test coverage
+        if: github.ref == 'refs/heads/main'
+        run: |
+          remotes::install_cran("covr")
+          covr::codecov()
+        shell: Rscript {0}
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
