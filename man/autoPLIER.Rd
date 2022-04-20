@@ -6,6 +6,15 @@
 \usage{
 autoPLIER(...)
 }
+\arguments{
+\item{n_components}{Number of latent variables/latent dimensions.}
+
+\item{regval}{Regularization value.}
+
+\item{learning_rate}{Proportion that weights are updated during training.}
+
+\item{scaler}{Scaler to transform data.}
+}
 \description{
 AutoPLIER class
 }
