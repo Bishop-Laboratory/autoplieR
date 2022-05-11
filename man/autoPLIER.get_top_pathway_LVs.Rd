@@ -2,7 +2,7 @@
 % Please edit documentation in R/autoPLIER.R
 \name{autoPLIER.get_top_pathway_LVs}
 \alias{autoPLIER.get_top_pathway_LVs}
-\title{AutoPlIER Get Top Pathways LVs Method}
+\title{AutoPLIER Get Top Pathways LVs Method}
 \usage{
 autoPLIER.get_top_pathway_LVs(ap, ...)
 }
@@ -12,5 +12,5 @@ autoPLIER.get_top_pathway_LVs(ap, ...)
 \item{n_LVs}{Number of latent variables to retrieve.}
 }
 \description{
-AutoPlIER Get Top Pathways LVs Method
+AutoPLIER Get Top Pathways LVs Method
 }

@@ -1,0 +1,163 @@
+---
+title: "Embedding and analyzing Omics data with autoplieR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Embedding and analyzing Omics data with autoplieR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Quick start
+
+Steps to embed Omics data into a latent space representation are shown below. autoplieR takes in data frames containing gene expression data and corresponding pathways data called `xtrain` and `pwy`, respectively. 
+
+```{r}
+mod <- autoPLIER(n_components = )
+fit <- mod$fit(x_train = xtrain, pathways = pwy)
+trans <- mod$transform(x_predict = xtrain, pathways = pwy)
+
+fit_trans <- mod$fit_transform(x_train = xtrain, pathways = pwy)
+
+# Get pathways most associated with the LVs
+top_pwys <- mod$get_top_pathways(LVs = , n_pathways = )
+
+# Get LVs most associated with a chosen pathway
+top_LVs_pwys <- mod$get_top_pathway_LVs(pathway = , n_LVs = )
+```
+
+
+# Method
+
+BLURB HERE
+
+
+# COVID-19 case study
+
+BLURB HERE
+
+```{r library}
+library(autoplieR)
+library(glmnet)
+library(caret)
+library(tidyverse)
+```
+
+
+## Datasets
+
+The following datasets in this example were obtained from ____
+
+```{r data}
+# Load gene expression data
+#read.table
+con <- gzcon(url(paste("https://github.com/Bishop-Laboratory/autoPLIER-analysis/raw/main/data/Overmyer21/GSE157103_genes.log1tpm.tsv.gz", sep = "\t")))
+txt <- readLines(con)
+df_log1tpm <- read.delim(textConnection(txt), row.names = 1)
+
+# Load metadata
+df_metadata <- read.delim("https://github.com/Bishop-Laboratory/autoPLIER-analysis/raw/main/data/Overmyer21/GSE157103_metadata.tsv", row.names = 1)
+
+# Load pathways data
+pathwayfl <- system.file("extdata", "test_pathways.csv.xz", package = "autoplieR")
+df_pathways <- read.csv(pathwayfl, row.names = 1)
+```
+
+
+## Training autoplieR
+
+`fit()` fits the calculation to the transformer object. The calculation is then applied to the data via `transform()` to transform the scale of the data points. Test data should be used to prevent bias.
+
+`fit_transform()` performs fit and transform simultaneously. Training data should be used to define learned parameters used to scale test data.
+
+Fit and transform method:
+```{r fit_and_transform}
+# Create and fit model
+mod <- autoPLIER(n_components = 100, learning_rate = 0.001)
+mod <- autoPLIER.fit(mod, x_train = df_log1tpm, pathways = df_pathways, verbose = 0)
+
+# Transform the new data
+df_ap <- autoPLIER.transform(mod, x_predict = df_log1tpm, pathways = df_pathways)
+```
+
+Fit_transform method:
+```{r fit_transform}
+# Fit and transform
+mod <- autoPLIER(n_components = 100, learning_rate = 0.001)
+df_ap2 <- autoPLIER.fit_transform(mod, x_train = df_log1tpm, pathways = df_pathways, verbose = 0)
+```
+
+
+## Plotting autoplieR-transformed data using PCA
+
+```{r pca_plots}
+# Compute PCA
+pca_res <- prcomp(df_ap, scale = TRUE)
+
+# Index and bind metadata for 'COVID' and 'ICU_1'
+df_pca <- as.data.frame(pca_res$x[,1:2])
+rownames(df_pca) <- rownames(df_ap)
+
+df_plot <- df_pca %>%
+    bind_cols(COVID = df_metadata$COVID, 
+              ICU = df_metadata$ICU_1) %>%
+    mutate(COVID = as.factor(COVID), ICU = as.factor(ICU))
+
+# Plot for COVID and non-COVID
+ggplot(df_plot, aes(x = PC1, y = PC2, color = COVID)) +
+    geom_point()
+
+# Plot for ICU and non-ICU
+ggplot(df_plot, aes(x = PC1, y = PC2, color = ICU)) +
+    geom_point()
+
+# Plot for ICU and non-ICU for those with COVID
+df_plot %>%
+    filter(COVID == 1) %>%
+    ggplot(., aes(x = PC1, y = PC2, color = ICU)) +
+    geom_point()
+```
+
+
+## Training a logistic regression model to predict ICU vs. non-ICU within the COVID-19 cohort
+
+```{r log}
+# Create training set
+train <- df_ap %>%
+  bind_cols(COVID = df_metadata$COVID,
+            ICU = df_metadata$ICU_1) %>%
+  filter(COVID == 1)
+
+X_train <- as.matrix(train[,1:(ncol(train)-1)])
+
+# Fit model 
+log_lambda_grid <- seq(0, -4, length=100) 
+lambda_grid <- 10^log_lambda_grid
+
+lr_model <- glmnet(X_train, train$ICU, alpha = 1, family = "binomial", lambda = lambda_grid)
+
+coeffs <- coef(lr_model)
+
+```
+
+## Extracting LVs and top pathways
+
+```{r LVs}
+# Retrieve LVs associated with being in the ICU
+df_model_coeffs <- data.frame(t(as.matrix(coeffs)))
+colnames(df_model_coeffs) <- coeffs@Dimnames[[1]]
+
+rownames_to_column(df_model_coeffs) %>%
+  pivot_longer(cols = -rowname)
+
+
+# Retrieve LVs assocated with not being in the ICU
+
+# Retrieve top 10 pathways within those LVs associated with being in the ICU
+
+# Retrieve top 10 LVs associated with not being in the ICU
+```
