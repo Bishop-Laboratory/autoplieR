@@ -4,7 +4,7 @@
 \alias{autoPLIER.fit_transform}
 \title{AutoPLIER Fit-Transform Method}
 \usage{
-autoPLIER.fit_transform(ap, ...)
+autoPLIER.fit_transform(ap, mod, ...)
 }
 \arguments{
 \item{x_train}{Training dataset used to train the model.}

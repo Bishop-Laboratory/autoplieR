@@ -41,3 +41,63 @@ test_that(
     }
 )
 
+# Test transform method
+test_that(
+    "Test transform",
+    {
+        ap <- autoPLIER(n_components=100)
+        ap <- autoPLIER.fit(
+            ap, x_train=x_train, pathways=pathways,
+            maxepoch=100L, verbose=0
+        )
+        ap <- autoPLIER.transform(
+            ap, x_predict=x_train, pathways=pathways
+        )
+        expect_type(ap, type = "list")
+    }
+)
+
+# Test fit_transform method
+test_that(
+    "Test fit_transform",
+    {
+        ap <- autoPLIER(n_components=100)
+        ap <- autoPLIER.fit_transform(
+            ap, x_train=x_train, pathways=pathways,
+            maxepoch=100L, verbose=0, valfrac=.3
+        )
+        expect_type(ap, type = "list")
+    }
+)
+
+# Test get_top_pathways method
+test_that(
+    "Test get_top_pathways",
+    {
+        ap <- autoPLIER(n_components=100)
+        autoPLIER.fit_transform(
+            ap, x_train=x_train, pathways=pathways,
+            maxepoch=100L, verbose=0, valfrac=.3
+        )
+        ap <- autoPLIER.get_top_pathways(
+            ap, n_pathways=5L, LVs=c(0L, 1L)
+        )
+        expect_type(ap, type = "list")
+    }
+)
+
+# Test get_top_pathway_LVs method
+test_that(
+    "Test get_top_pathway_LVs",
+    {
+        ap <- autoPLIER(n_components=100)
+        autoPLIER.fit_transform(
+            ap, x_train=x_train, pathways=pathways,
+            maxepoch=100L, verbose=0, valfrac=.3
+        )
+        ap <- autoPLIER.get_top_pathway_LVs(
+            ap, pathway="BIOCARTA_VDR_PATHWAY", n_LVs=2L
+        )
+        expect_type(ap, type = "double")
+    }
+)
