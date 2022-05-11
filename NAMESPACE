@@ -2,3 +2,7 @@
 
 export(autoPLIER)
 export(autoPLIER.fit)
+export(autoPLIER.fit_transform)
+export(autoPLIER.get_top_pathway_LVs)
+export(autoPLIER.get_top_pathways)
+export(autoPLIER.transform)
