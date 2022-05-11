@@ -7,7 +7,7 @@
 #'
 #' @export
 autoPLIER <- function(...) {
-    check_ap()
+    #check_ap()
     autoplier <- reticulate::import("autoplier.model")
     autoplier$autoPLIER(...)
 }
@@ -41,7 +41,6 @@ autoPLIER.fit <- function(ap, ...) {
 #' @export
 autoPLIER.transform <- function(ap, ...) {
     ap$transform(...)
-    ap
 }
 
 
@@ -58,9 +57,9 @@ autoPLIER.transform <- function(ap, ...) {
 #' @param valfrac Fraction of the training dataset used as validation data.
 #'
 #' @export
-autoPLIER.fit_transform <- function(ap, ...) {
+autoPLIER.fit_transform <- function(ap, mod, ...) {
     ap$fit_transform(...)
-    ap
+
 }
 
 
@@ -77,7 +76,7 @@ autoPLIER.get_top_pathways <- function(ap, ...) {
 
 
 
-#' AutoPlIER Get Top Pathways LVs Method
+#' AutoPLIER Get Top Pathways LVs Method
 #'
 #' @param pathway List of pathways.
 #' @param n_LVs Number of latent variables to retrieve.
