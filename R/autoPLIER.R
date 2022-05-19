@@ -66,12 +66,31 @@ autoPLIER.fit_transform <- function(ap, mod, ...) {
 
 #' AutoPLIER Get Top Pathways Method
 #'
+#' @param ap AutoPLIER object
 #' @param LVs List of decomposed latent variables.
 #' @param n_pathways Number of pathways to retrieve.
 #'
 #' @export
-autoPLIER.get_top_pathways <- function(ap, ...) {
-    ap$get_top_pathways(...)
+#' @importFrom dplyr %>% mutate filter rename group_by arrange
+#' @importFrom dplyr desc slice_max group_split group_keys
+#' @importFrom tibble rownames_to_column
+#' @importFrom tidyr pivot_longer
+autoPLIER.get_top_pathways <- function(ap, LVs, n_pathways) {
+    ap$components_decomposition_ %>%
+        rownames_to_column(var = "pathway") %>%
+        pivot_longer(cols = -pathway) %>%
+        mutate(
+            name = gsub(
+                name, pattern = "^([0-9]+)[ ]*$", replacement = "LV_\\1"
+            )
+        ) %>%
+        filter(name %in% {{ LVs }}) %>%
+        rename(LV=name) %>%
+        group_by(LV) %>%
+        arrange(LV, desc(value)) %>%
+        slice_max(order_by = value, n = n_pathways) %>%
+        {setNames(group_split(.), nm=group_keys(.)[[1]])} %>%
+        as.list()
 }
 
 
