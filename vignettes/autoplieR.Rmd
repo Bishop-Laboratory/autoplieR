@@ -86,7 +86,7 @@ tpm <- read_csv(
 Fit and transform method:
 ```{r fit_and_transform}
 # Create and fit model
-ap <- autoPLIER(n_components = 100, learning_rate = 0.000001)
+ap <- autoPLIER(n_components = 50, learning_rate = 0.000001)
 ap <- autoPLIER.fit(ap, x_train = column_to_rownames(tpm, var = "sampleID"), pathways = pathways, verbose = 0)
 
 # Transform the new data
