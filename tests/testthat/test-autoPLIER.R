@@ -14,8 +14,8 @@ library(autoplieR)
 library(testthat)
 
 # Get test data from package's extdata folder
-testxfl <- system.file("extdata", "test_X.csv.xz", package = "autoplieR")
-pathwayfl <- system.file("extdata", "test_pathways.csv.xz", package = "autoplieR")
+testxfl <- system.file("extdata", "GSE157103_icu_tpm.csv.xz", package = "autoplieR")
+pathwayfl <- system.file("extdata", "pathways.csv.xz", package = "autoplieR")
 x_train <- read.csv(testxfl, row.names = 1)
 pathways <- read.csv(pathwayfl, row.names = 1)
 

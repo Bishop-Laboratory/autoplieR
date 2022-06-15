@@ -7,10 +7,15 @@
 autoPLIER.get_top_pathway_LVs(ap, ...)
 }
 \arguments{
+\item{ap}{AutoPLIER object.}
+
 \item{pathway}{List of pathways.}
 
 \item{n_LVs}{Number of latent variables to retrieve.}
 }
+\value{
+Numeric object with the chosen pathway and its corresponding LVs.
+}
 \description{
-AutoPLIER Get Top Pathways LVs Method
+Retrieve LVs associated with a named pathway.
 }

@@ -9,12 +9,17 @@ autoPLIER(...)
 \arguments{
 \item{n_components}{Number of latent variables/latent dimensions.}
 
-\item{regval}{Regularization value.}
+\item{regval}{Regularization value. Default: \code{1.20E-7}.}
 
-\item{learning_rate}{Proportion that weights are updated during training.}
+\item{learning_rate}{Proportion that weights are updated during training.
+Default: \code{0.0002}.}
 
 \item{scaler}{Scaler to transform data.}
 }
+\value{
+A Python object called \code{autoplier.model.autoPLIER} that cannot be
+viewed.
+}
 \description{
-AutoPLIER class
+Calls the constructor autoPLIER to create a model.
 }

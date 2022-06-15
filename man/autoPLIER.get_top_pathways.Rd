@@ -4,13 +4,18 @@
 \alias{autoPLIER.get_top_pathways}
 \title{AutoPLIER Get Top Pathways Method}
 \usage{
-autoPLIER.get_top_pathways(ap, ...)
+autoPLIER.get_top_pathways(ap, LVs, n_pathways)
 }
 \arguments{
+\item{ap}{AutoPLIER object.}
+
 \item{LVs}{List of decomposed latent variables.}
 
 \item{n_pathways}{Number of pathways to retrieve.}
 }
+\value{
+A list containing sub-lists for each listed LV.
+}
 \description{
-AutoPLIER Get Top Pathways Method
+Retrieve pathways most related to a list of LVs with coefficients.
 }
