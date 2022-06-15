@@ -7,21 +7,29 @@
 autoPLIER.fit(ap, ...)
 }
 \arguments{
+\item{ap}{AutoPLIER object.}
+
 \item{x_train}{Training dataset used to train the model.}
 
 \item{pathways}{Pathways dataset.}
 
 \item{callbacks}{List of callbacks to apply during training.}
 
-\item{batch_size}{Fixed batch size.}
+\item{batch_size}{Fixed batch size. Default: \code{NULL}.}
 
-\item{maxepoch}{Max number of epochs.}
+\item{maxepoch}{Max number of epochs. Default: \code{2000}.}
 
 \item{verbose}{Verbosity mode. 0 = silent, 1 = progress bar,
-2 = one line per epoch.}
+2 = one line per epoch. Default: \code{2}.}
 
-\item{valfrac}{Fraction of the training dataset used as validation data.}
+\item{valfrac}{Fraction of the training dataset used as validation data.
+Default: \code{0.3}.}
+}
+\value{
+A Python object called \code{autoplier.model.autoPLIER} that cannot be
+viewed.
 }
 \description{
-AutoPLIER Fit Method
+Computes the mean and standard deviation for scaling of a created autoPLIER
+model.
 }

@@ -7,10 +7,16 @@
 autoPLIER.transform(ap, ...)
 }
 \arguments{
+\item{ap}{AutoPLIER object.}
+
 \item{x_predict}{Dataset to be transformed into the latent space.}
 
 \item{pathways}{Pathways dataset.}
 }
+\value{
+A dataframe consisting of a number of LV columns as specified by the
+\code{n_components} in \code{autoPLIER()}.
+}
 \description{
-AutoPLIER Transform Method
+Applies the fitted calculation to the created autoPLIER model.
 }
