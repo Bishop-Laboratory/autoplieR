@@ -1,12 +1,19 @@
 ### Tests the autoPLIER object and its methods ###
 
 # Set the conda environment
-if (Sys.getenv("RETICULATE_PYTHON") == "") {
+if (Sys.getenv("RETICULATE_PYTHON") == "" & Sys.getenv("GHA") != "GHA") {
     print("SETTING ENV!")
     Sys.setenv(RETICULATE_PYTHON = "~/miniconda3/envs/test-autoplier/bin/python")
     reticulate::use_condaenv("test-autoplier", required = TRUE)
 } else {
     print(Sys.getenv())
+}
+
+err <- try (
+    autoPLIER(n_components=200)
+)
+if ("try-error" %in% class(err)) {
+    autoplieR:::install_ap()
 }
 
 # Libraries
