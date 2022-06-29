@@ -4,3 +4,8 @@
 ^README\.Rmd$
 ^cran-comments\.md$
 ^\.github$
+^doc$
+^Meta$
+^data-raw$
+^misc$
+^\__pycache__

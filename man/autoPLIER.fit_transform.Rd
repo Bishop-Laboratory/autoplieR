@@ -4,26 +4,12 @@
 \alias{autoPLIER.fit_transform}
 \title{AutoPLIER Fit-Transform Method}
 \usage{
-autoPLIER.fit_transform(ap, mod, ...)
+autoPLIER.fit_transform(ap, ...)
 }
 \arguments{
 \item{ap}{AutoPLIER object.}
 
-\item{x_train}{Training dataset used to train the model.}
-
-\item{pathways}{Pathways dataset.}
-
-\item{callbacks}{List of callbacks to apply during training.}
-
-\item{batch_size}{Fixed batch size. Default: \code{NULL}.}
-
-\item{maxepoch}{Max number of epochs. Default: \code{2000}.}
-
-\item{verbose}{Verbosity mode. 0 = silent, 1 = progress bar,
-2 = one line per epoch. Default: \code{2}.}
-
-\item{valfrac}{Fraction of the training dataset used as validation data.
-Default: \code{0.3}.}
+\item{...}{Additional arguments for autoPLIER.fit_transform. See \emph{details}.}
 }
 \value{
 A dataframe consisting of a number of LV columns as specified by the
@@ -31,4 +17,32 @@ A dataframe consisting of a number of LV columns as specified by the
 }
 \description{
 Simultaneously fit the data and transform the autoPLIER model.
+}
+\details{
+\subsection{Additional arguments}{
+\itemize{
+\item \strong{x_train} - Training dataset used to train the model.
+\item \strong{pathways} - Pathways dataset.
+\item \strong{callbacks} - List of callbacks to apply during training.
+\item \strong{batch_size} - Fixed batch size. Default: \code{NULL}.
+\item \strong{maxepoch} - Max number of epochs. Default: \code{2000}.
+\item \strong{verbose} - Verbosity mode. 0 = silent, 1 = progress bar,
+2 = one line per epoch. Default: \code{2}.
+\item \strong{valfrac} - Fraction of the training dataset used as validation data.
+Default: \code{0.3}.
+}
+}
+}
+\examples{
+# Example datasets
+xtrain <- read.csv(system.file("extdata", "GSE157103_icu_tpm.csv.xz", package = "autoplieR"),
+ row.names = 1)
+pwy <- read.csv(system.file("extdata", "pathways.csv.xz", package = "autoplieR"),
+ row.names = 1)
+
+# Fit and transform
+mod <- autoPLIER(n_components = 50)
+df_ap <- autoPLIER.fit_transform(mod, x_train = xtrain, pathways = pwy, maxepoch=100L,
+ verbose = 0)
+
 }
