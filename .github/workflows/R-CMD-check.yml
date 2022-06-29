@@ -39,9 +39,9 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           cache-version: 2
-          extra-packages:
-            - any::rcmdcheck
-            - any::remotes
+          extra-packages: |
+            any::rcmdcheck
+            any::remotes
       - name: Set up miniconda
         run: |
           Rscript -e "remotes::install_github('rstudio/reticulate')"
