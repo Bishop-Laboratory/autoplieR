@@ -4,10 +4,10 @@
 if (Sys.getenv("RETICULATE_PYTHON") == "") {
     print("SETTING ENV!")
     Sys.setenv(RETICULATE_PYTHON = "~/miniconda3/envs/test-autoplier/bin/python")
+    reticulate::use_condaenv("test-autoplier", required = TRUE)
 } else {
     print(Sys.getenv())
 }
-reticulate::use_condaenv("test-autoplier", required = TRUE)
 
 # Libraries
 library(autoplieR)
