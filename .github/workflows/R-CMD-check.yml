@@ -49,7 +49,7 @@ jobs:
       - name: Set up deps
         run: |
           Rscript -e "reticulate::conda_create('r-reticulate', packages = c('python==3.9'))"
-          Rscript -e "reticulate::install_local()"
+          Rscript -e "remotes::install_local()"
           Rscript -e "autoplieR:::install_ap()"
       - uses: r-lib/actions/check-r-package@v2
         with:
