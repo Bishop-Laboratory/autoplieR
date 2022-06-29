@@ -39,7 +39,9 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           cache-version: 2
-          extra-packages: any::rcmdcheck
+          extra-packages:
+            - any::rcmdcheck
+            - any::remotes
       - name: Set up miniconda
         run: |
           Rscript -e "remotes::install_github('rstudio/reticulate')"
@@ -47,6 +49,7 @@ jobs:
       - name: Set up deps
         run: |
           Rscript -e "reticulate::conda_create('r-reticulate', packages = c('python==3.9'))"
+          Rscript -e "reticulate::install_local()"
           Rscript -e "autoplieR:::install_ap()"
       - uses: r-lib/actions/check-r-package@v2
         with:
