@@ -1,7 +1,5 @@
 ---
 title: "Embedding and analyzing Omics data with autoplieR"
-abstract: |
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas fermentum felis ut neque ullamcorper accumsan. Vivamus libero velit, egestas nec ligula hendrerit, cursus viverra lorem. Cras sit amet aliquet tortor. Donec ullamcorper eleifend ex, non ultrices diam eleifend hendrerit.
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Embedding and analyzing Omics data with autoplieR}
@@ -32,6 +30,15 @@ top_pwys <- autoPLIER.get_top_pathways(LVs = lv, n_pathways = 5)
 
 # Get LVs most associated with a chosen pathway
 top_LVs_pwys <- autoPLIER.get_top_pathway_LVs(pathway = "HALLMARK_MYC_TARGETS_V2", n_LVs = 5)
+```
+
+# Installation
+
+AutoplieR can be installed from github.
+
+```{r install, eval=FALSE}
+library(remotes)
+install_github("Bishop-Laboratory/autoplieR")
 ```
 
 # Method
@@ -125,7 +132,8 @@ df_plot <- df_pca %>%
 # Plot for ICU and non-ICU
 ggplot(df_plot, aes(x = PC1, y = PC2, color = ICU)) +
     geom_point() +
-    theme_bw()
+    theme_bw() +
+    ggtitle("Biplot of ICU vs non-ICU")
 ```
 <p>We see there is separation between ICU and non-ICU COVID patients.</p>
 
@@ -133,7 +141,7 @@ ggplot(df_plot, aes(x = PC1, y = PC2, color = ICU)) +
 
 The `glmnet` package is used to to train a lasso model with a grid of logarithmic values. Refer to the `glmnet` vignette for more details. 
 
-```{r log_mod, fig.dim = c(8, 4)}
+```{r log_mod, fig.dim = c(6, 4)}
 # Fit model 
 log_lambda_grid <- seq(0, -20, length=200) 
 lambda_grid <- 10^log_lambda_grid
@@ -145,7 +153,8 @@ lr_model <- cv.glmnet(
     family = "binomial", type.measure='class', lambda = lambda_grid
 )
 
-plot(lr_model)
+plot(lr_model, main = "")
+title(main = "Lasso lamda using 10-fold cross validation", line = 3)
 ```
 <p>From the plot, we see the misclassification error is the smaller as the penalty parameter approaches 0. The optimal or minimal lambda is seen at the left dotted line at approximately -7. The selected lambda below corresponds with this.</p>
 
@@ -165,7 +174,7 @@ lr_final <- glmnet(
 ```
 
 Once predictions are generated from our trained lasso model, construct a confusion matrix to examine the distribution of predictions and actual values.
-.
+
 ```{r}
 pred <- predict(lr_final, as.matrix(df_ap), type="class")
 
@@ -223,20 +232,21 @@ ggplot(coefs_tidy, aes(x = LV, y = Weight, fill=Weight)) +
 
 Use the obtained coefficients from the previous section above to select significant LVs. In this example, positive coefficients corresponded to ICU admission while negative coefficients corresponded to non-ICU.
 
-```{r LVs, fig.dim = c(8, 5)}
+```{r LVs, fig.dim = c(6, 6)}
 # Retrieve LVs associated with being in the ICU
-top_LVs <- coefs_tidy %>% slice_max(order_by = abs(Weight), n = 5)
-top_pos_LVs_pwys <- autoPLIER.get_top_pathways(ap, LVs = top_LVs$LV, n_pathways = 10)
+top_pos_LVs <- coefs_tidy %>% slice_max(order_by = Weight, n = 5)
+top_pos_LVs_pwys <- autoPLIER.get_top_pathways(ap, LVs = top_pos_LVs$LV, n_pathways = 10)
 
 top_pos_LVs_pwys %>%
     bind_rows() %>%
     mutate(LV = as.factor(LV)) %>%
-    ggplot(., aes(value, pathway, fill = value)) + 
-    facet_grid(LV ~ ., scales = "free_y") + 
-    geom_col(color = "black", size = .05) + 
-    theme_minimal(base_size = 8) + theme(legend.position = "none") +
-    ggtitle("Pathways corresponding to LVs associated with ICU") +
-    scale_fill_distiller(type="div", palette="RdBu") 
+    ggplot(., aes(LV, pathway, size = value, color = value)) + 
+    geom_point() + 
+    guides(color=guide_legend(), size = guide_legend()) +
+    scale_color_gradient(low = "blue", high = "red") +
+    scale_size(range = c(0, 5)) +
+    theme_minimal(base_size = 8) +
+    ggtitle("Pathways corresponding to LVs associated with ICU")
 
 # Retrieve LVs associated with not being in the ICU
 top_neg_LVs <- coefs_tidy %>% slice_min(order_by = Weight, n = 5)
@@ -245,12 +255,13 @@ top_neg_LVs_pwys <- autoPLIER.get_top_pathways(ap, LVs = top_neg_LVs$LV, n_pathw
 top_neg_LVs_pwys %>%
     bind_rows() %>%
     mutate(LV = as.factor(LV)) %>%
-    ggplot(., aes(value, pathway, fill = value)) + 
-    facet_grid(LV ~ ., scales = "free_y") + 
-    geom_col(color = "black", size = .05) + 
-    theme_minimal(base_size = 8) + theme(legend.position = "none") +
-    ggtitle("Pathways corresponding to LVs associated with non-ICU") +
-    scale_fill_distiller(type="div", palette="RdBu") 
+    ggplot(., aes(LV, pathway, size = value, color = value)) + 
+    geom_point() + 
+    guides(color=guide_legend(), size = guide_legend()) +
+    scale_color_gradient(low = "blue", high = "red") +
+    scale_size(range = c(0, 5)) +
+    theme_minimal(base_size = 8) +
+    ggtitle("Pathways corresponding to LVs associated with non-ICU") 
 ```
 
 # Session info

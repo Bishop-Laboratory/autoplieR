@@ -7,7 +7,12 @@ Authors@R:
 Description: What the package does (one paragraph).
 License: MIT + file LICENSE
 Suggests: 
-    testthat (>= 3.0.0)
+    caret,
+    glmnet,
+    knitr,
+    msigdbr,
+    testthat (>= 3.0.0),
+    tidyverse
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -18,5 +23,11 @@ Config/reticulate:
       list(package = "git+https://github.com/dmontemayor/autoplier.git@devel")
     )
   )
+VignetteBuilder: knitr
 Imports: 
-    reticulate
+    dplyr,
+    reticulate,
+    rlang,
+    stats,
+    tibble,
+    tidyr
