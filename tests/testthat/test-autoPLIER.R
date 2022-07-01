@@ -1,21 +1,28 @@
 ### Tests the autoPLIER object and its methods ###
 
 # Set the conda environment
-if (Sys.getenv("RETICULATE_PYTHON") == "") {
+if (Sys.getenv("RETICULATE_PYTHON") == "" & Sys.getenv("GHA") != "GHA") {
     print("SETTING ENV!")
     Sys.setenv(RETICULATE_PYTHON = "~/miniconda3/envs/test-autoplier/bin/python")
+    reticulate::use_condaenv("test-autoplier", required = TRUE)
 } else {
     print(Sys.getenv())
 }
-reticulate::use_condaenv("test-autoplier", required = TRUE)
+
+err <- try (
+    autoPLIER(n_components=200)
+)
+if ("try-error" %in% class(err)) {
+    autoplieR:::install_ap()
+}
 
 # Libraries
 library(autoplieR)
 library(testthat)
 
 # Get test data from package's extdata folder
-testxfl <- system.file("extdata", "test_X.csv.xz", package = "autoplieR")
-pathwayfl <- system.file("extdata", "test_pathways.csv.xz", package = "autoplieR")
+testxfl <- system.file("extdata", "GSE157103_icu_tpm.csv.xz", package = "autoplieR")
+pathwayfl <- system.file("extdata", "pathways.csv.xz", package = "autoplieR")
 x_train <- read.csv(testxfl, row.names = 1)
 pathways <- read.csv(pathwayfl, row.names = 1)
 
@@ -80,7 +87,7 @@ test_that(
             maxepoch=100L, verbose=0, valfrac=.3
         )
         ap <- autoPLIER.get_top_pathways(
-            ap, n_pathways=5L, LVs=c(0L, 1L)
+            ap, n_pathways=5, LVs=array(c("LV_38", "LV_30"))
         )
         expect_type(ap, type = "list")
     }
