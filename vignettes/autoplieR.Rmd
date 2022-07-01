@@ -8,37 +8,49 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(tidy = FALSE, 
+                      cache = FALSE,
+                      message = FALSE,
+                      error = FALSE,
+                      warning = FALSE,
+                      fig.align = "center")
 ```
-
 
 # Quick start
 
-Steps to embed Omics data into a latent space representation are shown below. autoplieR takes in data frames containing gene expression data and corresponding pathways data called `xtrain` and `pwy`, respectively. 
+Steps to embed Omics data into a latent space representation are shown below. autoplieR takes in data frames containing gene expression data and corresponding pathways data called `xtrain` and `pwy`, respectively. For ease of analysis, be sure that row names are appropriately labeled. `lv` should have a factored column with the chosen latent variables. 
 
-```r
-mod <- autoPLIER(regval=1.20E-7)
-fit <- mod$fit(x_train = xtrain, pathways = pwy)
-trans <- mod$transform(x_predict = xtrain, pathways = pwy)
-
-fit_trans <- mod$fit_transform(x_train = xtrain, pathways = pwy)
+```{r quickstart, eval=FALSE}
+mod <- autoPLIER(n_components = 100)
+mod <- autoPLIER.fit(mod, x_train = xtrain, pathways = pwy, verbose = 0)
+trans <- autoPLIER.transform(mod, x_predict = xtrain, pathways = pwy)
 
 # Get pathways most associated with the LVs
-top_pwys <- mod$get_top_pathways(LVs = , n_pathways = )
+top_pwys <- autoPLIER.get_top_pathways(mod, LVs = lv, n_pathways = 5)
 
 # Get LVs most associated with a chosen pathway
-top_LVs_pwys <- mod$get_top_pathway_LVs(pathway = , n_LVs = )
+top_LVs_pwys <- autoPLIER.get_top_pathway_LVs(mod, pathway = 2, n_LVs = 5L) # pathway arg goes by row name
+                                                                            # from pathways dataset
+
+top_LVs_pwys <- autoPLIER.get_top_pathway_LVs(mod, pathway = "BIOCARTA_LYM_PATHWAY", n_LVs = 5L) # if row name is named by pathway
 ```
 
+# Installation
+
+AutoplieR can be installed from github.
+
+```{r install, eval=FALSE}
+library(remotes)
+install_github("Bishop-Laboratory/autoplieR")
+```
 
 # Method
 
-BLURB HERE
+Sed lacinia neque a nisl interdum dictum. Morbi accumsan posuere mauris. Vivamus vulputate justo sed tincidunt cursus.
 
+# Example: A COVID-19 case study
 
-# COVID-19 case study
-
-BLURB HERE
+To determine what factors are highly associated with whether or not COVID-19 patients are admitted to the ICU, we will perform an analysis using autoplieR commands.
 
 ```{r library}
 library(autoplieR)
@@ -48,13 +60,16 @@ library(tidyverse)
 library(msigdbr)
 ```
 
+The resulting transformed data can then be used to train a logistic model for prediction and visualization.
 
 ## Datasets
 
-The following datasets in this example were obtained from ____
+Pathways data are obtained from the `msigdbr` package for only demonstration. Therefore, `misgdbr` may not be necessary for your analysis.
+
+Metadata can also be loaded for easier interpretation of your results, but is not needed.
 
 ```{r data}
-## Load pathways data
+# Load pathways data
 pathways <- msigdbr(category = "H") %>% 
     select(gs_name, gene_symbol) %>% 
     mutate(value=1) %>% 
@@ -65,7 +80,7 @@ pathways <- msigdbr(category = "H") %>%
     ) %>% 
     column_to_rownames("gs_name")
 
-## Get TPM data
+# Get TPM data
 metadata <- read_csv(
     system.file("extdata", "GSE157103_icu_metadata.csv.xz", package = "autoplieR"), 
     show_col_types = FALSE
@@ -76,17 +91,19 @@ tpm <- read_csv(
 ) %>% rename(sampleID=1)
 ```
 
-
 ## Training autoplieR
 
-`fit()` fits the calculation to the transformer object. The calculation is then applied to the data via `transform()` to transform the scale of the data points. Test data should be used to prevent bias.
+Once training and pathways files are loaded, we can initiate a model with the `autoPLIER()` function. Note that the number of components (`n_components`) and learning rate (`learning_rate`) chosen here were for quicker illustration purposes.
 
-`fit_transform()` performs fit and transform simultaneously. Training data should be used to define learned parameters used to scale test data.
-
-Fit and transform method:
-```{r fit_and_transform}
-# Create and fit model
+```{r build_model}
+# Create a model
 ap <- autoPLIER(n_components = 50, learning_rate = 0.000001)
+```
+
+Next, fit and transform the model. It is imperative to assign the fit step to the same object assigned in the previous build model step.
+
+```{r fit_and_transform}
+# Fit model
 ap <- autoPLIER.fit(ap, x_train = column_to_rownames(tpm, var = "sampleID"), pathways = pathways, verbose = 0)
 
 # Transform the new data
@@ -94,12 +111,13 @@ df_ap <- autoPLIER.transform(ap, x_predict = column_to_rownames(tpm, var = "samp
 colnames(df_ap) <- paste0("LV_", gsub(colnames(df_ap), pattern = " ", replacement = ""))
 ```
 
+The `df_ap` object can now be used to plot and train a logistic model.
 
 ## Plotting autoplieR-transformed data using PCA
 
-```{r pca_plots}
+```{r pca_plots, fig.dim = c(6, 4)}
 # Compute TSNE
-pca_res <- prcomp(df_ap, scale. = T)
+pca_res <- prcomp(df_ap, scale. = TRUE)
 
 # Index and bind metadata for 'COVID' and 'ICU_1'
 df_pca <- as.data.frame(pca_res$x[,1:2])
@@ -116,13 +134,17 @@ df_plot <- df_pca %>%
 
 # Plot for ICU and non-ICU
 ggplot(df_plot, aes(x = PC1, y = PC2, color = ICU)) +
-    geom_point()
+    geom_point() +
+    theme_bw() +
+    ggtitle("Biplot of ICU vs non-ICU")
 ```
-
+<p>We see there is separation between ICU and non-ICU COVID patients.</p>
 
 ## Training a logistic regression model to predict ICU vs. non-ICU within the COVID-19 cohort
 
-```{r log}
+The `glmnet` package is used to to train a lasso model with a grid of logarithmic values. Refer to the `glmnet` vignette for more details. 
+
+```{r log_mod, fig.dim = c(6, 4)}
 # Fit model 
 log_lambda_grid <- seq(0, -20, length=200) 
 lambda_grid <- 10^log_lambda_grid
@@ -133,21 +155,30 @@ lr_model <- cv.glmnet(
     as.matrix(df_ap), icu, alpha = 1, 
     family = "binomial", type.measure='class', lambda = lambda_grid
 )
-plot(lr_model)
 
+plot(lr_model, main = "")
+title(main = "Lasso lamda using 10-fold cross validation", line = 3)
 ```
+<p>From the plot, we see the misclassification error is the smaller as the penalty parameter approaches 0. The optimal or minimal lambda is seen at the left dotted line at approximately -7. The selected lambda below corresponds with this.</p>
 
-```{r}
-
+```{r lambda}
 # Select the best lambda
 lambda <- lr_model$lambda[which.min(lr_model$cvm)]
+```
 
+We can now fit the model with the optimal lambda to predict ICU and non-ICU outcomes in COVID-19 patients. 
+
+```{r final_log_mod}
 # Build the logistic model
 lr_final <- glmnet(
     df_ap, icu, alpha = 1,
     family = "binomial", type.measure='class', lambda = lambda
 )
+```
 
+Once predictions are generated from our trained lasso model, construct a confusion matrix to examine the distribution of predictions and actual values.
+
+```{r}
 pred <- predict(lr_final, as.matrix(df_ap), type="class")
 
 # Show the confusion matrix
@@ -167,6 +198,11 @@ pred %>%
     column_to_rownames("pred_icu")
 ```
 
+It seems like our predicted and actual values correlate well.
+<p>
+Lastly, retrieve all non-zero coefficients from the model as shown below.
+</p>
+
 ```{r,  fig.height=5, fig.width=5}
 # Get the coefficients
 coeffs <- coef(lr_final)
@@ -182,7 +218,6 @@ coefs_tidy <- coeffs %>%
     rename(Weight=s0) %>% 
     mutate(LV = factor(LV, levels = unique(.$LV)))
     
-
 # Plot the LVs and their coefs
 ggplot(coefs_tidy, aes(x = LV, y = Weight, fill=Weight)) +
     geom_col(color="black", size = .15) +
@@ -196,32 +231,46 @@ ggplot(coefs_tidy, aes(x = LV, y = Weight, fill=Weight)) +
     scale_fill_distiller(type="div", palette="RdBu") 
 ```
 
-
-
 ## Extracting LVs and top pathways
 
-```{r LVs}
+Use the obtained coefficients from the previous section above to select significant LVs. In this example, positive coefficients corresponded to ICU admission while negative coefficients corresponded to non-ICU.
+
+```{r LVs, fig.dim = c(6, 6)}
 # Retrieve LVs associated with being in the ICU
-top_LVs <- coefs_tidy %>% slice_max(order_by = abs(Weight), n = 5)
-autoPLIER.get_top_pathways(ap, LVs = top_LVs$LV, n_pathways = 10)
+top_pos_LVs <- coefs_tidy %>% slice_max(order_by = Weight, n = 5)
+top_pos_LVs_pwys <- autoPLIER.get_top_pathways(ap, LVs = top_pos_LVs$LV, n_pathways = 10)
 
-# Retrieve LVs assocated with not being in the ICU
+top_pos_LVs_pwys %>%
+    bind_rows() %>%
+    arrange(LV, value) %>%
+    mutate(pathway = factor(pathway, levels = unique(.$pathway)), LV = as.factor(LV)) %>%
+    ggplot(., aes(LV, pathway, size = value, color = value)) + 
+    geom_point() + 
+    guides(color=guide_legend(), size = guide_legend()) +
+    scale_color_gradient(low = "blue", high = "red") +
+    theme_minimal(base_size = 8) +
+    ggtitle("Pathways corresponding to LVs associated with ICU")
 
-# Retrieve top 10 pathways within those LVs associated with being in the ICU
+# Retrieve LVs associated with not being in the ICU
+top_neg_LVs <- coefs_tidy %>% slice_min(order_by = Weight, n = 5)
+top_neg_LVs_pwys <- autoPLIER.get_top_pathways(ap, LVs = top_neg_LVs$LV, n_pathways = 10)
 
-# Retrieve top 10 LVs associated with not being in the ICU
+top_neg_LVs_pwys %>%
+    bind_rows() %>%
+    arrange(LV, value) %>%
+    mutate(pathway = factor(pathway, levels = unique(.$pathway)), LV = as.factor(LV)) %>%
+    ggplot(., aes(LV, pathway, size = value, color = value)) + 
+    geom_point() + 
+    guides(color=guide_legend(), size = guide_legend()) +
+    scale_color_gradient(low = "blue", high = "red") +
+    theme_minimal(base_size = 8) +
+    ggtitle("Pathways corresponding to LVs associated with non-ICU") 
 ```
 
+# Session info
 
+```{r}
+sessionInfo()
+```
 
-
-
-
-
-
-
-
-
-
-
-
+# References

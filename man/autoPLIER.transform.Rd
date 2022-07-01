@@ -7,10 +7,37 @@
 autoPLIER.transform(ap, ...)
 }
 \arguments{
-\item{x_predict}{Dataset to be transformed into the latent space.}
+\item{ap}{AutoPLIER object.}
 
-\item{pathways}{Pathways dataset.}
+\item{...}{Additional arguments for autoPLIER.transform. See \emph{details}.}
+}
+\value{
+A dataframe consisting of a number of LV columns as specified by the
+\code{n_components} in \code{autoPLIER()}.
 }
 \description{
-AutoPLIER Transform Method
+Applies the fitted calculation to the created autoPLIER model.
+}
+\details{
+\subsection{Additional arguments}{
+\itemize{
+\item \strong{x_predict} - Dataset to be transformed into the latent space.
+\item \strong{pathways} - Pathways dataset.
+}
+}
+}
+\examples{
+# Example datasets
+xtrain <- read.csv(system.file("extdata", "GSE157103_icu_tpm.csv.xz", package = "autoplieR"),
+ row.names = 1)
+pwy <- read.csv(system.file("extdata", "pathways.csv.xz", package = "autoplieR"),
+ row.names = 1)
+
+# Fit the model
+mod <- autoPLIER(n_components = 50)
+mod <- autoPLIER.fit(mod, x_train = xtrain, pathways = pwy, maxepoch=100L, verbose = 0)
+
+# Transform
+df_ap <- autoPLIER.transform(mod, x_predict = xtrain, pathways = pwy)
+
 }
