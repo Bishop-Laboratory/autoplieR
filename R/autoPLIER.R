@@ -198,7 +198,7 @@ autoPLIER.get_top_pathways <- function(ap, LVs, n_pathways) {
 #' @return Numeric object with the chosen pathway and its corresponding LVs.
 #' @details
 #' ## Additional arguments
-#' * **pathway** - List of pathways.
+#' * **pathway** - A named pathway.
 #' * **n_LVs** - Number of latent variables to retrieve.
 #'
 #' @examples

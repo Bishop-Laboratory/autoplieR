@@ -18,18 +18,21 @@ knitr::opts_chunk$set(tidy = FALSE,
 
 # Quick start
 
-Steps to embed Omics data into a latent space representation are shown below. autoplieR takes in data frames containing gene expression data and corresponding pathways data called `xtrain` and `pwy`, respectively. `lv` should have a factored column with the chosen latent variables.
+Steps to embed Omics data into a latent space representation are shown below. autoplieR takes in data frames containing gene expression data and corresponding pathways data called `xtrain` and `pwy`, respectively. For ease of analysis, be sure that row names are appropriately labeled. `lv` should have a factored column with the chosen latent variables. 
 
 ```{r quickstart, eval=FALSE}
 mod <- autoPLIER(n_components = 100)
-fit <- autoPLIER.fit(x_train = xtrain, pathways = pwy, verbose = 0)
-trans <- autoPLIER.transform(x_predict = xtrain, pathways = pwy)
+mod <- autoPLIER.fit(mod, x_train = xtrain, pathways = pwy, verbose = 0)
+trans <- autoPLIER.transform(mod, x_predict = xtrain, pathways = pwy)
 
 # Get pathways most associated with the LVs
-top_pwys <- autoPLIER.get_top_pathways(LVs = lv, n_pathways = 5)
+top_pwys <- autoPLIER.get_top_pathways(mod, LVs = lv, n_pathways = 5)
 
 # Get LVs most associated with a chosen pathway
-top_LVs_pwys <- autoPLIER.get_top_pathway_LVs(pathway = "HALLMARK_MYC_TARGETS_V2", n_LVs = 5)
+top_LVs_pwys <- autoPLIER.get_top_pathway_LVs(mod, pathway = 2, n_LVs = 5L) # pathway arg goes by row name
+                                                                            # from pathways dataset
+
+top_LVs_pwys <- autoPLIER.get_top_pathway_LVs(mod, pathway = "BIOCARTA_LYM_PATHWAY", n_LVs = 5L) # if row name is named by pathway
 ```
 
 # Installation
@@ -239,12 +242,12 @@ top_pos_LVs_pwys <- autoPLIER.get_top_pathways(ap, LVs = top_pos_LVs$LV, n_pathw
 
 top_pos_LVs_pwys %>%
     bind_rows() %>%
-    mutate(LV = as.factor(LV)) %>%
+    arrange(LV, value) %>%
+    mutate(pathway = factor(pathway, levels = unique(.$pathway)), LV = as.factor(LV)) %>%
     ggplot(., aes(LV, pathway, size = value, color = value)) + 
     geom_point() + 
     guides(color=guide_legend(), size = guide_legend()) +
     scale_color_gradient(low = "blue", high = "red") +
-    scale_size(range = c(0, 5)) +
     theme_minimal(base_size = 8) +
     ggtitle("Pathways corresponding to LVs associated with ICU")
 
@@ -254,12 +257,12 @@ top_neg_LVs_pwys <- autoPLIER.get_top_pathways(ap, LVs = top_neg_LVs$LV, n_pathw
 
 top_neg_LVs_pwys %>%
     bind_rows() %>%
-    mutate(LV = as.factor(LV)) %>%
+    arrange(LV, value) %>%
+    mutate(pathway = factor(pathway, levels = unique(.$pathway)), LV = as.factor(LV)) %>%
     ggplot(., aes(LV, pathway, size = value, color = value)) + 
     geom_point() + 
     guides(color=guide_legend(), size = guide_legend()) +
     scale_color_gradient(low = "blue", high = "red") +
-    scale_size(range = c(0, 5)) +
     theme_minimal(base_size = 8) +
     ggtitle("Pathways corresponding to LVs associated with non-ICU") 
 ```
