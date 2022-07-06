@@ -11,3 +11,6 @@
 ^\__pycache__
 ^__autograph_generated.*$
 ^check/.*$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

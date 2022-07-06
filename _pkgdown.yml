@@ -1,0 +1,9 @@
+url: ~
+template:
+  bootstrap: 5
+  bootswatch: lux
+  bslib:
+    base_font: {google: "Kantumruy Pro"}
+    pkgdown-nav-height: 90px
+    primary: "#164c63"
+  theme: nord
