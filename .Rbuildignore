@@ -4,6 +4,13 @@
 ^README\.Rmd$
 ^cran-comments\.md$
 ^\.github$
+^doc$
+^Meta$
+^data-raw$
+^misc$
+^\__pycache__
+^__autograph_generated.*$
+^check/.*$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$

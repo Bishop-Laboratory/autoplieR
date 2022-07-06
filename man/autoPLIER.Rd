@@ -7,14 +7,27 @@
 autoPLIER(...)
 }
 \arguments{
-\item{n_components}{Number of latent variables/latent dimensions.}
-
-\item{regval}{Regularization value.}
-
-\item{learning_rate}{Proportion that weights are updated during training.}
-
-\item{scaler}{Scaler to transform data.}
+\item{...}{Additional arguments for autoPLIER. See \emph{details}.}
+}
+\value{
+A Python object called \code{autoplier.model.autoPLIER} that cannot be
+viewed.
 }
 \description{
-AutoPLIER class
+Calls the constructor autoPLIER to create a model.
+}
+\details{
+\subsection{Additional arguments}{
+\itemize{
+\item \strong{n_components} - Number of latent variables/latent dimensions.
+\item \strong{regval} - Regularization value. Default: \code{1.20E-7}.
+\item \strong{learning_rate} - Proportion that weights are updated during training.
+Default: \code{0.0002}.
+\item \strong{scaler} - Scaler to transform data.
+}
+}
+}
+\examples{
+mod <- autoPLIER(n_components = 50)
+
 }

@@ -2,15 +2,41 @@
 % Please edit documentation in R/autoPLIER.R
 \name{autoPLIER.get_top_pathway_LVs}
 \alias{autoPLIER.get_top_pathway_LVs}
-\title{AutoPlIER Get Top Pathways LVs Method}
+\title{AutoPLIER Get Top Pathways LVs Method}
 \usage{
 autoPLIER.get_top_pathway_LVs(ap, ...)
 }
 \arguments{
-\item{pathway}{List of pathways.}
+\item{ap}{AutoPLIER object.}
 
-\item{n_LVs}{Number of latent variables to retrieve.}
+\item{...}{Additional arguments for autoPLIER.get_top_pathway_LVs. See \emph{details}.}
+}
+\value{
+Numeric object with the chosen pathway and its corresponding LVs.
 }
 \description{
-AutoPlIER Get Top Pathways LVs Method
+Retrieve LVs associated with a named pathway.
+}
+\details{
+\subsection{Additional arguments}{
+\itemize{
+\item \strong{pathway} - List of pathways.
+\item \strong{n_LVs} - Number of latent variables to retrieve.
+}
+}
+}
+\examples{
+# Example datasets
+xtrain <- read.csv(system.file("extdata", "GSE157103_icu_tpm.csv.xz", package = "autoplieR"),
+ row.names = 1)
+pwy <- read.csv(system.file("extdata", "pathways.csv.xz", package = "autoplieR"),
+ row.names = 1)
+
+# Fit and transform
+mod <- autoPLIER(n_components = 50)
+autoPLIER.fit_transform(mod, x_train = xtrain, pathways = pwy, maxepoch=100L, verbose=0)
+
+# Get LVs for a pathway
+mod <- autoPLIER.get_top_pathway_LVs(mod, pathway="BIOCARTA_VDR_PATHWAY", n_LVs=2L)
+
 }
