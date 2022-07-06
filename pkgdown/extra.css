@@ -1,0 +1,57 @@
+body {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+pre {
+    border: 0;
+    overflow: auto;
+    background: #FCFCFC;
+    padding: 20px;
+    line-height: 25px;
+    font-size: 15px;
+}
+
+pre code {
+    color: #164c63;
+    background: #FCFCFC;
+}
+
+code {
+    font-size: 85%;
+    border-radius: 0;
+}
+
+h1 {
+    text-transform: none;
+    padding-bottom: 6px;
+    padding-top: 10px;
+}
+
+h2 {
+    font-size: 22px;
+    padding-bottom: 6px;
+    padding-top: 10px;
+}
+
+.navbar-brand {
+    text-transform: none;
+}
+
+::-webkit-scrollbar {
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ced6dc;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1b1bc;
+}
