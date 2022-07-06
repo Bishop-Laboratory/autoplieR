@@ -272,8 +272,8 @@ and actual values.</p>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pred_icu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Predicted: "</span>, <span class="va">pred_icu</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>    <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">column_to_rownames</a></span><span class="op">(</span><span class="st">"pred_icu"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##              Real: 0 Real: 1</span></span>
-<span><span class="co">## Predicted: 0      38      10</span></span>
-<span><span class="co">## Predicted: 1      12      40</span></span></code></pre>
+<span><span class="co">## Predicted: 0      46       6</span></span>
+<span><span class="co">## Predicted: 1       4      44</span></span></code></pre>
 It seems like our predicted and actual values correlate well.
 <p>
 Lastly, retrieve all non-zero coefficients from the model as shown
